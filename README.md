@@ -195,11 +195,8 @@ splitpay-frontend/
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
-## 📝 License
-
-This project is open source and available under the Apache License 2.0.
 
 ## 📞 Support
 
-For issues, questions, or suggestions, please open an issue on GitHub or reach out via our community channels.
+For issues, questions, or suggestions, please open an issue on GitHub or reach out via our [community](https://telegram.org) channels.
 
