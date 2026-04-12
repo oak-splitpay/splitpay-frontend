@@ -1,4 +1,4 @@
-# Splitpay 💸 - Split Bills on Stellar
+# Splitpay - Split Bills on Stellar
 
 Splitpay is an open-source dApp built on the Stellar network that takes the awkwardness out of splitting the bill. Settle shared expenses instantly using blockchain technology with minimal fees and no middleman.
 
