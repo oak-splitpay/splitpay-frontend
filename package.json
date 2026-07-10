@@ -2,6 +2,7 @@
   "name": "splitpay-frontend",
   "version": "0.1.0",
   "private": true,
+  "keywords": ["stellar", "soroban", "drip-wave", "splitpay"],
   "scripts": {
     "dev": "next dev",
     "build": "next build",

@@ -1,6 +1,16 @@
 # Splitpay - Split Bills on Stellar
 
+**Stellar Drip Wave Submission**
+
 Splitpay is an open-source dApp built on the Stellar network that takes the awkwardness out of splitting the bill. Settle shared expenses instantly using blockchain technology with minimal fees and no middleman.
+
+## Drip Wave Submission Details
+
+### Product Scope
+Splitpay provides a seamless interface for users to split bills and settle payments directly via the Stellar network using Soroban smart contracts. It integrates with Freighter for secure wallet signatures and utilizes the Stellar Horizon API for real-time transaction tracking.
+
+### Migration Plan
+Splitpay is being built natively for the Stellar ecosystem to leverage its low fees, fast settlement times, and the robust smart contract capabilities of Soroban, making peer-to-peer micro-transactions efficient and transparent.
 
 ##  Features
 
