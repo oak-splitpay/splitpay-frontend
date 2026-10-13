@@ -5,7 +5,9 @@
  * instead of polling Horizon for payment status updates.
  */
 
-import { SubscriptionResponse } from 'stellar-sdk';
+export interface SubscriptionResponse {
+  close: () => void;
+}
 
 export interface PaymentEvent {
   type: 'payment_confirmed' | 'payment_failed' | 'payment_initiated';
@@ -85,9 +87,9 @@ export class SorobanEventSubscriber {
    */
   private createEventSubscription(
     splitId: string,
-    contractAddress: string,
-    onPaymentUpdate: (event: PaymentEvent) => void,
-    onError?: (error: Error) => void
+    _contractAddress?: string,
+    _onPaymentUpdate?: (event: PaymentEvent) => void,
+    _onError?: (error: Error) => void
   ): SubscriptionResponse {
     // This is a placeholder that implements the structure
     // In production, this would connect to Soroban JSON-RPC websocket

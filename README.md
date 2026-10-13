@@ -1,212 +1,130 @@
-# Splitpay - Split Bills on Stellar
+# SplitPay Frontend 💸
 
-**Stellar Drip Wave Submission**
+[![CI](https://github.com/oak-splitpay/splitpay-frontend/actions/workflows/ci.yml/badge.svg)](https://github.com/oak-splitpay/splitpay-frontend/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Next.js](https://img.shields.io/badge/Next.js-14-black.svg)](https://nextjs.org/)
+[![Stellar](https://img.shields.io/badge/Stellar-Testnet-blue.svg)](https://stellar.org/)
 
-Splitpay is an open-source dApp built on the Stellar network that takes the awkwardness out of splitting the bill. Settle shared expenses instantly using blockchain technology with minimal fees and no middleman.
+The open-source web application for **SplitPay** — a decentralized, zero-custody bill splitting application that settles shared expenses directly on the Stellar blockchain with microsecond finality and near-zero fees.
 
-## Drip Wave Submission Details
+---
 
-### Product Scope
-Splitpay provides a seamless interface for users to split bills and settle payments directly via the Stellar network using Soroban smart contracts. It integrates with Freighter for secure wallet signatures and utilizes the Stellar Horizon API for real-time transaction tracking.
+## 🔗 Architecture & Ecosystem
 
-### Migration Plan
-Splitpay is being built natively for the Stellar ecosystem to leverage its low fees, fast settlement times, and the robust smart contract capabilities of Soroban, making peer-to-peer micro-transactions efficient and transparent.
-
-##  Features
-
-- **Instant Settlement** - Pay on the Stellar blockchain in seconds
-- **Zero Custody** - Funds go directly peer-to-peer; Splitpay never holds user assets
-- **Secure Transactions** - Cryptographically signed transactions via Stellar wallets
-- **Real-time Tracking** - See payment status updates as they happen
-- **Shareable Links** - Generate unique payment links with QR codes
-- **Low Fees** - Stellar network microfees (no expensive gas)
-
-##  Architecture Overview
-
-### System Architecture
+SplitPay is architected as two decoupled, interoperable repositories:
+1. **`oak-splitpay/splitpay-frontend` (This Repository)**: The user-facing dApp built with Next.js 14, Tailwind CSS, TypeScript, and `@stellar/freighter-api`.
+2. **[`oak-splitpay/splitpay-backend-contract`](https://github.com/oak-splitpay/splitpay-backend-contract)**: The on-chain Soroban smart contract (`contracts/`) enforcing multi-session accounting, peer-to-peer token transfers, and double-payment prevention, alongside the NestJS metadata indexing API (`src/`).
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                        Frontend (Next.js)                        │
-│  ┌──────────────────────────────────────────────────────────┐   │
-│  │  - Landing Page / UI Components                           │   │
-│  │  - Bill Form Component                                    │   │
-│  │  - Wallet Connection (Freighter API)                     │   │
-│  │  - Payment Tracker                                        │   │
-│  │  - TypeScript + Tailwind CSS                              │   │
-│  └──────────────────────────────────────────────────────────┘   │
-└─────────────────────────────────────────────────────────────────┘
-              ▼                                    ▼
-    ┌─────────────────┐            ┌──────────────────────────┐
-    │  Stellar SDK    │            │  Freighter Wallet        │
-    │  (JS SDK v12)   │            │  Extension               │
-    └─────────────────┘            └──────────────────────────┘
-              ▼                                    ▼
-    ┌───────────────────────────────────────────────────────┐
-    │         Stellar Network (Horizon API)                 │
-    │  - Transaction signing & submission                   │
-    │  - Payment verification                               │
-    │  - Account management                                 │
-    └───────────────────────────────────────────────────────┘
+┌─────────────────────────────────┐
+│     splitpay-frontend (Next.js) │
+│  - Freighter Wallet Connect     │
+│  - Split Creation Wizard        │
+│  - Live Payment Tracker         │
+│  - Duplicate Click Guard        │
+└───────────────┬─────────────────┘
+                │
+        ┌───────┴────────┐
+        ▼                ▼
+┌──────────────────┐  ┌──────────────────────────────────┐
+│ NestJS Indexer   │  │ Soroban Smart Contract           │
+│ (Backend API)    │  │ (contracts/src/lib.rs)           │
+│ - Session Meta   │  │ - Multi-Session State            │
+│ - REST Endpoints │  │ - Peer-to-Peer Token Settlement  │
+│ - Status Cache   │  │ - Double-Payment Prevention Guard│
+└──────────────────┘  └──────────────────────────────────┘
 ```
 
-### Component Architecture
+---
 
-#### Frontend Components
+## 🌟 Key Features
 
-1. **BillForm** - `components/BillForm.tsx`
-   - Form for creating bill splits
-   - Input validation
-   - Real-time per-person calculation
-   - Error handling
+- **Freighter Wallet Integration (`components/WalletConnect.tsx`)**:
+  - Secure connection with automatic network switching (Stellar Testnet & Futurenet).
+  - Session persistence via `localStorage` to preserve connected status across refreshes.
+  - Dedicated Testnet fallback mode for automated testing environments.
+- **Interactive Split Creation (`components/BillForm.tsx` & `app/page.tsx`)**:
+  - Real-time calculation of per-person share with rounding protection.
+  - Generates shareable payment links with unique split session IDs.
+- **Live On-Chain Payment Tracker (`components/PaymentTracker.tsx`)**:
+  - Shows real-time settlement status (`Paid`, `Pending`, `Failed`).
+  - Progress bar reflecting paid proportions.
+  - One-click "Pay Now" action for participants with duplicate payment prevention.
+  - Displays confirmed transaction hashes with direct links to the [Stellar Expert](https://stellar.expert/explorer/testnet) block explorer.
+- **Automated CI/CD (`.github/workflows/ci.yml`)**:
+  - Automated GitHub Actions workflow running full Next.js production builds and TypeScript typechecks.
 
-2. **WalletConnect** - `components/WalletConnect.tsx`
-   - Freighter wallet integration
-   - Connect/disconnect functionality
-   - Address display
-   - Mock wallet support for testing
+---
 
-3. **PaymentTracker** - `components/PaymentTracker.tsx`
-   - Display payment status for each participant
-   - Progress tracking
-   - Status indicators (paid/pending/failed)
+## 🛠️ Tech Stack
 
-4. **Landing Page** - `app/page.tsx`
-   - Hero section with value proposition
-   - Feature highlights
-   - Navigation between pages
-   - Create split workflow
+- **Framework**: Next.js 14 (App Router)
+- **UI & Styling**: React 18, Tailwind CSS, Lucide React
+- **Blockchain SDKs**: `@stellar/freighter-api`, `@stellar/stellar-sdk`
+- **Language**: TypeScript 5
 
-### Tech Stack
+---
 
-#### Frontend
-- **Framework:** Next.js 14 (React 18)
-- **Styling:** Tailwind CSS 3
-- **Language:** TypeScript 5
-- **Blockchain:** Stellar JS SDK 12
-- **Wallet:** Freighter API 2.2
-- **HTTP Client:** Axios
-- **Icons:** Lucide React
-
-#### Infrastructure
-- **Runtime:** Node.js 18+
-- **Package Manager:** npm/yarn
-- **Build Tool:** Next.js (Webpack)
-
-### Data Flow
-
-1. **Split Creation**
-   - User enters bill details (amount, participants, description)
-   - Frontend calculates per-person amount
-   - Split session created with unique ID
-   - Shareable link & QR code generated
-
-2. **Payment Settlement**
-   - Participants receive shareable link
-   - Connect Stellar wallet via Freighter
-   - Review transaction details
-   - Sign transaction with private key
-   - Transaction submitted to Stellar network
-   - Payment verified via Stellar Horizon API
-
-3. **Status Updates**
-   - Real-time polling of transaction status
-   - Update UI when payments are confirmed
-   - Display final settlement status
-
-## Quick Start
+## 🚀 Getting Started
 
 ### Prerequisites
 - Node.js v18+
-- npm or yarn
-- A Stellar testnet wallet (Freighter browser extension recommended)
+- [Freighter Wallet Browser Extension](https://www.freighter.app/)
 
 ### Installation
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/yourusername/splitpay.git
-   cd splitpay-frontend
-   ```
+```bash
+# Clone the repository
+git clone https://github.com/oak-splitpay/splitpay-frontend.git
+cd splitpay-frontend
 
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
+# Install dependencies
+npm install
 
-3. **Environment Setup** (optional)
-   ```bash
-   cp .env.example .env.local
-   ```
+# Start development server
+npm run dev
+```
 
-4. **Run development server**
-   ```bash
-   npm run dev
-   ```
-   
-   Open [http://localhost:3000](http://localhost:3000) in your browser.
+Visit [http://localhost:3000](http://localhost:3000) to view the application.
 
-### Build for Production
+### Production Build
+
 ```bash
 npm run build
-npm start
 ```
 
-## 📁 Project Structure
+---
 
-```
-splitpay-frontend/
-├── app/
-│   ├── layout.tsx           # Root layout with metadata
-│   ├── page.tsx             # Main landing page / app UI
-│   └── globals.css          # Global Tailwind styles
-├── components/
-│   ├── BillForm.tsx         # Bill creation form
-│   ├── WalletConnect.tsx    # Wallet connection component
-│   └── PaymentTracker.tsx   # Payment status tracker
-├── public/                  # Static assets
-├── docs/                    # Documentation
-│   └── PRD.md              # Product requirements
-├── package.json            # Dependencies
-├── tailwind.config.ts      # Tailwind configuration
-├── tsconfig.json           # TypeScript configuration
-└── next.config.js          # Next.js configuration
-```
+## 🌐 Live Stellar Testnet Evidence
 
-## 🔄 Workflow
+The frontend workflow was verified end-to-end against the Stellar Testnet:
+- **Verified Timestamp**: `2026-10-13T15:03:43Z`
+- **Network**: Stellar Testnet (`https://horizon-testnet.stellar.org`)
+- **Split Session ID**: `1791903815791`
+- **Ledger Sequence**: `5176047`
+- **Payer Account**: [`GCN74D5M3ORI6N5KHOOZECJJK5CDPPAIMYI33ZQ6CUSVY5NULSH7ALNR`](https://stellar.expert/explorer/testnet/account/GCN74D5M3ORI6N5KHOOZECJJK5CDPPAIMYI33ZQ6CUSVY5NULSH7ALNR)
+- **Receiver Account**: [`GCLIQJUZ3GBBFAAC244RGJ3AENPAMF2S2ROU6P5KTPNXBPV3TGJV7QDA`](https://stellar.expert/explorer/testnet/account/GCLIQJUZ3GBBFAAC244RGJ3AENPAMF2S2ROU6P5KTPNXBPV3TGJV7QDA)
+- **Settlement Transaction Hash**: [`44a7e8b0d1110ae839981e0f2e1de003d4081cc693d9c629c811b36255c56c91`](https://stellar.expert/explorer/testnet/tx/44a7e8b0d1110ae839981e0f2e1de003d4081cc693d9c629c811b36255c56c91)
+- **Observed Results**:
+  - Participant 1 successfully debited 50 XLM.
+  - Receiver credited 50 XLM on-chain.
+  - UI state transitioned to `Paid` with transaction hash link.
+  - Duplicate payment prevention guard successfully blocked subsequent payments.
 
-### For Bill Creator
-1. Navigate to "Create Split"
-2. Enter occasion, total amount, and number of participants
-3. Optionally add notes
-4. System calculates per-person amount
-5. Generate shareable link
-6. Connect wallet and confirm initial transaction
-7. Track payments in real-time
-
-### For Bill Participants
-1. Receive shareable link from bill creator
-2. Click link to open Splitpay
-3. Review split details
-4. Connect Stellar wallet
-5. Approve transaction in wallet
-6. Payment sent to creator's address
-7. Status updated on tracker
-
-## 🔐 Security Considerations
-
-- **No Private Keys Stored** - All key management handled by Freighter
-- **On-Chain Verification** - All transactions verified via Stellar Horizon
-- **No Intermediate Custody** - Funds transfer directly peer-to-peer
-- **Signed Transactions** - All transactions cryptographically signed
-
+---
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+We welcome community contributions! Please review [CONTRIBUTING.md](./CONTRIBUTING.md) for contribution guidelines.
 
+### Contributor Backlog
+Check our [Issues](https://github.com/oak-splitpay/splitpay-frontend/issues) for open tasks:
+- QR Code invoice generation modal for mobile participants.
+- Multi-asset currency selector (USDC / XLM) in split creation.
+- WalletConnect v2 fallback adapter for mobile Stellar wallets.
 
-## 📞 Support
+---
 
-For issues, questions, or suggestions, please open an issue on GitHub or reach out via our [community](https://telegram.org) channels.
+## 📜 License
 
+This project is licensed under the [MIT License](./LICENSE).
